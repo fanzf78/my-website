@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>民办高校省级优秀基层教学组织效能现状调研</title>
+    <!-- 引入Tailwind CSS（无需本地安装，CDN直接使用） -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome图标（用于星级评分等） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自定义样式补充 */
+        .question-container {
+            @apply mb-6 bg-white p-5 rounded-lg shadow-sm;
+        }
+        .module-title {
+            @apply text-xl font-bold text-gray-800 mb-4 pl-3 border-l-4 border-blue-500;
+        }
+        .question-title {
+            @apply text-lg font-medium text-gray-700 mb-3 flex items-start;
+        }
+        .required {
+            @apply text-red-500 mr-2 mt-1;
+        }
+        .radio-item, .checkbox-item {
+            @apply flex items-center mb-2 cursor-pointer;
+        }
+        .radio-input, .checkbox-input {
+            @apply w-4 h-4 mr-2 text-blue-500;
+        }
+        .rating-group {
+            @apply flex justify-between items-center;
+        }
+        .rating-item {
+            @apply flex flex-col items-center cursor-pointer;
+        }
+        .star {
+            @apply text-2xl transition-colors duration-200;
+        }
+        .star.active {
+            @apply text-yellow-400;
+        }
+        .text-input {
+            @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+        }
+        .submit-btn {
+            @apply w-full py-3 bg-blue-500 text-white rounded-lg font-medium text-lg transition-colors duration-200 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed;
+        }
+        .page {
+            @apply min-h-screen bg-gray-50 p-4 md:p-8;
+        }
+        .card {
+            @apply max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-8;
+        }
+        .identity-item {
+            @apply flex items-center mb-4 p-3 border border-gray-200 rounded-lg cursor-pointer transition-colors duration-200 hover:bg-gray-50;
+        }
+        .identity-item.active {
+            @apply border-blue-500 bg-blue-50;
+        }
+        .success-icon {
+            @apply w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white text-4xl mx-auto mb-6;
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页：身份筛选 -->
+    <div id="index-page" class="page">
+        <div class="card">
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">民办高校省级优秀基层教学组织效能现状调研</h1>
+            <div class="bg-blue-50 p-4 rounded-lg mb-8">
+                <p class="text-gray-700 leading-relaxed">
+                    您好！为深入了解民办高校省级优秀基层教学组织的效能现状，优化教学组织建设与实践路径，课题组开展本次调研。本问卷实行匿名制，所有数据仅用于学术研究，严格保密。问卷填写约需8-10分钟，请根据实际情况作答，感谢您的支持与配合！
+                </p>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">请选择您的身份：</h2>
+            <div class="identity-list space-y-3">
+                <div class="identity-item" data-identity="leader">
+                    <input type="radio" name="identity" value="leader" class="radio-input" id="identity-leader">
+                    <label for="identity-leader" class="text-gray-700 text-lg">基层教学组织负责人</label>
+                </div>
+                <div class="identity-item" data-identity="teacher">
+                    <input type="radio" name="identity" value="teacher" class="radio-input" id="identity-teacher">
+                    <label for="identity-teacher" class="text-gray-700 text-lg">教学组织教师</label>
+                </div>
+                <div class="identity-item" data-identity="manager">
+                    <input type="radio" name="identity" value="manager" class="radio-input" id="identity-manager">
+                    <label for="identity-manager" class="text-gray-700 text-lg">学校/学院管理人员</label>
+                </div>
+                <div class="identity-item" data-identity="student">
+                    <input type="radio" name="identity" value="student" class="radio-input" id="identity-student">
+                    <label for="identity-student" class="text-gray-700 text-lg">学生</label>
+                </div>
+            </div>
+            <button id="enter-survey" class="submit-btn mt-8" disabled>进入问卷</button>
+        </div>
+    </div>
+
+    <!-- 问卷通用页面（动态渲染） -->
+    <div id="survey-page" class="page hidden">
+        <div class="card">
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6" id="survey-title">问卷填写</h1>
+            <form id="survey-form">
+                <!-- 问卷内容将通过JS动态渲染 -->
+                <div id="survey-content" class="space-y-8"></div>
+                <button type="submit" class="submit-btn mt-10">提交问卷</button>
+                <button type="button" id="back-index" class="submit-btn mt-4 bg-gray-200 text-gray-700 hover:bg-gray-300">返回首页</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 提交成功页面 -->
+    <div id="success-page" class="page hidden">
+        <div class="card text-center">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">问卷提交成功！</h1>
+            <p class="text-gray-700 text-lg mb-8">感谢您的支持与配合，祝您工作顺利、学习进步！</p>
+            <button id="share-btn" class="submit-btn">分享给其他受访者</button>
+            <button id="restart-btn" class="submit-btn mt-4 bg-gray-200 text-gray-700 hover:bg-gray-300">重新填写</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentIdentity = '';
+        let answers = {};
+        const surveyData = {
+            // 负责人问卷题目
+            leader: {
+                title: '基层教学组织负责人问卷',
+                modules: [
+                    {
+                        title: '一、组织基本情况',
+                        questions: [
+                            {
+                                id: 'leader_1',
+                                title: '您所在的基层教学组织类型',
+                                type: 'radio',
+                                required: true,
+                                options: ['教研室', '实验室', '课程组', '其他（请注明：________）']
+                            },
+                            {
+                                id: 'leader_2',
+                                title: '您所在教学组织成立年限',
+                                type: 'radio',
+                                required: true,
+                                options: ['5年及以下', '6-10年', '11-15年', '16年及以上']
+                            },
+                            {
+                                id: 'leader_3',
+                                title: '您所在教学组织教职工人数',
+                                type: 'radio',
+                                required: true,
+                                options: ['10人及以下', '11-20人', '21-30人', '31人及以上']
+                            },
+                            {
+                                id: 'leader_4',
+                                title: '您所在教学组织对应专业类型',
+                                type: 'radio',
+                                required: true,
+                                options: ['工科类', '文科类', '理科类', '艺术类', '其他（请注明：________）']
+                            }
+                        ]
+                    },
+                    {
+                        title: '二、资源配置效能',
+                        questions: [
+                            {
+                                id: 'leader_5',
+                                title: '教学经费投入满足教学与改革需求的程度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不足，5=非常充足'
+                            },
+                            {
+                                id: 'leader_6',
+                                title: '实训场地、设备等硬件资源的完备性与先进性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不足，5=非常充足'
+                            },
+                            {
+                                id: 'leader_7',
+                                title: '教学软件、图书资料、数字化资源的丰富度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不足，5=非常充足'
+                            },
+                            {
+                                id: 'leader_8',
+                                title: '与企业共建实习实训基地的数量与合作深度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不足，5=非常充足'
+                            },
+                            {
+                                id: 'leader_9',
+                                title: '跨组织/跨院校教学资源共享的便捷性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不便，5=非常便捷'
+                            }
+                        ]
+                    },
+                    {
+                        title: '三、教学管理与改革',
+                        questions: [
+                            {
+                                id: 'leader_10',
+                                title: '您所在教学组织的教学管理制度完善程度',
+                                type: 'radio',
+                                required: true,
+                                options: ['非常不完善', '不完善', '一般', '完善', '非常完善']
+                            },
+                            {
+                                id: 'leader_11',
+                                title: '教学质量监控体系（如听课评课、学生反馈、过程考核）的执行效果',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常差，5=非常好'
+                            },
+                            {
+                                id: 'leader_12',
+                                title: '近年来教学方法创新（如项目式教学、混合式教学）的推进力度',
+                                type: 'radio',
+                                required: true,
+                                options: ['未开展', '少量尝试', '部分课程实施', '全面推广']
+                            },
+                            {
+                                id: 'leader_13',
+                                title: '课程体系优化（对接行业需求、融入思政元素）的完成情况',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常差，5=非常好'
+                            },
+                            {
+                                id: 'leader_14',
+                                title: '您所在教学组织在产学研合作中的主要成效',
+                                type: 'checkbox',
+                                required: true,
+                                options: ['共建实训基地', '联合开发课程', '企业导师参与教学', '技术攻关合作', '成果转化', '其他（请注明：________）']
+                            },
+                            {
+                                id: 'leader_15',
+                                title: '在提升教学组织效能过程中，您面临的最大资源瓶颈是什么？有何改进建议？',
+                                type: 'input',
+                                required: false
+                            }
+                        ]
+                    },
+                    {
+                        title: '四、师资队伍建设',
+                        questions: [
+                            {
+                                id: 'leader_16',
+                                title: '师资队伍职称结构（正高/副高/中级/初级）的合理性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不合理，5=非常合理'
+                            },
+                            {
+                                id: 'leader_17',
+                                title: '中青年教师培养（培训、进修、导师制）的实效性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常差，5=非常好'
+                            },
+                            {
+                                id: 'leader_18',
+                                title: '高层次人才（行业专家、博士等）引进的难度',
+                                type: 'radio',
+                                required: true,
+                                options: ['非常大', '较大', '一般', '较小', '非常小']
+                            },
+                            {
+                                id: 'leader_19',
+                                title: '教师考核评价机制对教学工作的激励作用',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常弱，5=非常强'
+                            },
+                            {
+                                id: 'leader_20',
+                                title: '师资队伍在科研与教学融合方面的表现',
+                                type: 'checkbox',
+                                required: true,
+                                options: ['科研成果融入课堂教学', '学生参与科研项目', '教研项目申报积极性高', '发表教研论文/专利', '其他（请注明：________）']
+                            }
+                        ]
+                    }
+                ]
+            },
+            // 教师问卷题目
+            teacher: {
+                title: '教学组织教师问卷',
+                modules: [
+                    {
+                        title: '一、个人基本情况',
+                        questions: [
+                            {
+                                id: 'teacher_1',
+                                title: '您的职称',
+                                type: 'radio',
+                                required: true,
+                                options: ['正高级', '副高级', '中级', '初级', '无职称']
+                            },
+                            {
+                                id: 'teacher_2',
+                                title: '您在本教学组织的工作年限',
+                                type: 'radio',
+                                required: true,
+                                options: ['3年及以下', '4-8年', '9-15年', '16年及以上']
+                            },
+                            {
+                                id: 'teacher_3',
+                                title: '您的主要教学领域',
+                                type: 'radio',
+                                required: true,
+                                options: ['理论教学', '实践教学', '理论+实践教学']
+                            },
+                            {
+                                id: 'teacher_4',
+                                title: '您是否承担科研/教研项目',
+                                type: 'radio',
+                                required: true,
+                                options: ['是', '否']
+                            }
+                        ]
+                    },
+                    {
+                        title: '二、教学资源与保障',
+                        questions: [
+                            {
+                                id: 'teacher_5',
+                                title: '教学所需的教材、课件、数字化资源的可获取性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常困难，5=非常容易'
+                            },
+                            {
+                                id: 'teacher_6',
+                                title: '实训设备、实验室条件满足教学需求的程度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不足，5=非常充足'
+                            },
+                            {
+                                id: 'teacher_7',
+                                title: '教学经费支持（如教改项目、耗材采购）的及时性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不及时，5=非常及时'
+                            },
+                            {
+                                id: 'teacher_8',
+                                title: '您对教学资源共享平台（校内/校外）的使用频率',
+                                type: 'radio',
+                                required: true,
+                                options: ['从未使用', '偶尔使用', '经常使用', '频繁使用']
+                            }
+                        ]
+                    },
+                    {
+                        title: '三、教学实施与改革',
+                        questions: [
+                            {
+                                id: 'teacher_9',
+                                title: '您对当前课程体系（课程设置、内容编排）的合理性评价',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不合理，5=非常合理'
+                            },
+                            {
+                                id: 'teacher_10',
+                                title: '您采用新型教学方法（如翻转课堂、案例教学）的频率',
+                                type: 'radio',
+                                required: true,
+                                options: ['从未采用', '偶尔采用', '经常采用', '每门课均采用']
+                            },
+                            {
+                                id: 'teacher_11',
+                                title: '教学质量监控（如听课、学生评教）对您教学改进的帮助',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常小，5=非常大'
+                            },
+                            {
+                                id: 'teacher_12',
+                                title: '您参与教学改革项目（如一流课程建设、教改课题）的意愿',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常低，5=非常高'
+                            },
+                            {
+                                id: 'teacher_13',
+                                title: '您认为影响教学效果的主要因素',
+                                type: 'checkbox',
+                                required: true,
+                                options: ['学生基础', '教学资源', '考核方式', '班级规模', '学生学习积极性', '其他（请注明：________）']
+                            },
+                            {
+                                id: 'teacher_14',
+                                title: '您在教学创新、科研提升方面需要哪些支持？',
+                                type: 'input',
+                                required: false
+                            }
+                        ]
+                    },
+                    {
+                        title: '四、师资发展与评价',
+                        questions: [
+                            {
+                                id: 'teacher_15',
+                                title: '学校/教学组织提供的培训、进修机会的充足性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不足，5=非常充足'
+                            },
+                            {
+                                id: 'teacher_16',
+                                title: '导师制/传帮带机制对青年教师成长的作用',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常弱，5=非常强'
+                            },
+                            {
+                                id: 'teacher_17',
+                                title: '现行教师考核评价体系（教学占比、科研要求）的合理性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不合理，5=非常合理'
+                            },
+                            {
+                                id: 'teacher_18',
+                                title: '您对薪酬待遇、职业发展空间的满意度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不满意，5=非常满意'
+                            }
+                        ]
+                    }
+                ]
+            },
+            // 管理人员问卷题目
+            manager: {
+                title: '学校/学院管理人员问卷',
+                modules: [
+                    {
+                        title: '一、个人基本情况',
+                        questions: [
+                            {
+                                id: 'manager_1',
+                                title: '您的管理岗位层级',
+                                type: 'radio',
+                                required: true,
+                                options: ['学校层面（教务处、人事处等）', '学院层面', '系部层面']
+                            },
+                            {
+                                id: 'manager_2',
+                                title: '您从事教育管理工作的年限',
+                                type: 'radio',
+                                required: true,
+                                options: ['5年及以下', '6-10年', '11-15年', '16年及以上']
+                            },
+                            {
+                                id: 'manager_3',
+                                title: '您的管理工作与基层教学组织的关联度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常低，5=非常高'
+                            }
+                        ]
+                    },
+                    {
+                        title: '二、政策与制度建设',
+                        questions: [
+                            {
+                                id: 'manager_4',
+                                title: '学校针对基层教学组织建设的政策支持力度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常弱，5=非常强'
+                            },
+                            {
+                                id: 'manager_5',
+                                title: '基层教学组织考核评价体系的科学性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不科学，5=非常科学'
+                            },
+                            {
+                                id: 'manager_6',
+                                title: '师资引进与培养政策对基层教学组织的倾斜程度',
+                                type: 'radio',
+                                required: true,
+                                options: ['无倾斜', '轻微倾斜', '中度倾斜', '高度倾斜']
+                            },
+                            {
+                                id: 'manager_7',
+                                title: '教学资源分配（经费、设备、场地）的公平性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不公平，5=非常公平'
+                            },
+                            {
+                                id: 'manager_8',
+                                title: '您认为当前基层教学组织管理中最需要完善的制度',
+                                type: 'checkbox',
+                                required: true,
+                                options: ['资源配置制度', '考核激励制度', '师资培养制度', '教学改革支持制度', '产学研合作制度', '其他（请注明：________）']
+                            }
+                        ]
+                    },
+                    {
+                        title: '三、效能监管与支持',
+                        questions: [
+                            {
+                                id: 'manager_9',
+                                title: '对基层教学组织教学质量的监管力度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常弱，5=非常强'
+                            },
+                            {
+                                id: 'manager_10',
+                                title: '学校为基层教学组织提供的服务（如行政协调、技术支持）的实效性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常差，5=非常好'
+                            },
+                            {
+                                id: 'manager_11',
+                                title: '基层教学组织在人才培养、科研服务方面的贡献度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常低，5=非常高'
+                            },
+                            {
+                                id: 'manager_12',
+                                title: '从管理层面，您认为提升民办高校基层教学组织效能的关键举措是什么？',
+                                type: 'input',
+                                required: false
+                            }
+                        ]
+                    }
+                ]
+            },
+            // 学生问卷题目
+            student: {
+                title: '学生问卷',
+                modules: [
+                    {
+                        title: '一、个人基本情况',
+                        questions: [
+                            {
+                                id: 'student_1',
+                                title: '您的年级',
+                                type: 'radio',
+                                required: true,
+                                options: ['大一', '大二', '大三', '大四', '研究生']
+                            },
+                            {
+                                id: 'student_2',
+                                title: '您的专业类型',
+                                type: 'radio',
+                                required: true,
+                                options: ['工科类', '文科类', '理科类', '艺术类', '其他（请注明：________）']
+                            },
+                            {
+                                id: 'student_3',
+                                title: '您所在的基层教学组织（如教研室对应的专业）',
+                                type: 'input',
+                                required: true
+                            }
+                        ]
+                    },
+                    {
+                        title: '二、教学质量与课程体验',
+                        questions: [
+                            {
+                                id: 'student_4',
+                                title: '您对所学课程内容的实用性（对接就业/升学）评价',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不实用，5=非常实用'
+                            },
+                            {
+                                id: 'student_5',
+                                title: '教师的教学方法（互动性、趣味性、逻辑性）满意度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不满意，5=非常满意'
+                            },
+                            {
+                                id: 'student_6',
+                                title: '课程考核方式（如过程性考核、实践考核）的合理性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不合理，5=非常合理'
+                            },
+                            {
+                                id: 'student_7',
+                                title: '您最喜欢的教学形式',
+                                type: 'checkbox',
+                                required: true,
+                                options: ['理论讲授', '实验实训', '项目式学习', '企业实践', '线上学习', '其他（请注明：________）']
+                            },
+                            {
+                                id: 'student_8',
+                                title: '您认为课程教学中最需要改进的方面',
+                                type: 'checkbox',
+                                required: true,
+                                options: ['内容更新', '教学方法', '考核方式', '课时安排', '教师态度', '其他（请注明：________）']
+                            }
+                        ]
+                    },
+                    {
+                        title: '三、实践与资源支持',
+                        questions: [
+                            {
+                                id: 'student_9',
+                                title: '实训场地、设备的完备性与使用便利性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常差，5=非常好'
+                            },
+                            {
+                                id: 'student_10',
+                                title: '图书馆、数字化学习资源（网课、数据库）的可利用性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常困难，5=非常容易'
+                            },
+                            {
+                                id: 'student_11',
+                                title: '您参与科研项目、学科竞赛、社会实践的机会',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常少，5=非常多'
+                            },
+                            {
+                                id: 'student_12',
+                                title: '教师课后辅导、答疑的及时性',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不及时，5=非常及时'
+                            }
+                        ]
+                    },
+                    {
+                        title: '四、总体满意度与建议',
+                        questions: [
+                            {
+                                id: 'student_13',
+                                title: '您对所在基层教学组织的整体满意度',
+                                type: 'rating',
+                                required: true,
+                                desc: '1=非常不满意，5=非常满意'
+                            },
+                            {
+                                id: 'student_14',
+                                title: '请谈谈您对提升教学质量、优化学习体验的具体建议。',
+                                type: 'input',
+                                required: false
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // 页面切换函数
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        // 渲染问卷内容
+        function renderSurvey(identity) {
+            const survey = surveyData[identity];
+            document.getElementById('survey-title').textContent = survey.title;
+            const contentContainer = document.getElementById('survey-content');
+            contentContainer.innerHTML = '';
+
+            // 渲染每个模块
+            survey.modules.forEach(module => {
+                const moduleElement = document.createElement('div');
+                moduleElement.className = 'module';
+                moduleElement.innerHTML = `<h2 class="module-title">${module.title}</h2>`;
+
+                // 渲染每个题目
+                module.questions.forEach((question, index) => {
+                    const questionElement = document.createElement('div');
+                    questionElement.className = 'question-container';
+                    questionElement.dataset.questionId = question.id;
+
+                    // 题目标题
+                    const titleElement = document.createElement('div');
+                    titleElement.className = 'question-title';
+                    titleElement.innerHTML = `
+                        <span class="required" ${question.required ? '' : 'style="display:none"'}>*</span>
+                        <span>${index + 1}. ${question.title}</span>
+                    `;
+                    questionElement.appendChild(titleElement);
+
+                    // 根据题型渲染不同内容
+                    switch (question.type) {
+                        case 'radio':
+                            // 单选题
+                            const radioGroup = document.createElement('div');
+                            radioGroup.className = 'radio-group';
+                            question.options.forEach((option, optIndex) => {
+                                const radioItem = document.createElement('div');
+                                radioItem.className = 'radio-item';
+                                radioItem.innerHTML = `
+                                    <input type="radio" name="${question.id}" value="${option}" class="radio-input" id="${question.id}_${optIndex}">
+                                    <label for="${question.id}_${optIndex}" class="text-gray-700">${option}</label>
+                                `;
+                                radioGroup.appendChild(radioItem);
+                            });
+                            questionElement.appendChild(radioGroup);
+                            break;
+
+                        case 'checkbox':
+                            // 多选题
+                            const checkboxGroup = document.createElement('div');
+                            checkboxGroup.className = 'checkbox-group';
+                            question.options.forEach((option, optIndex) => {
+                                const checkboxItem = document.createElement('div');
+                                checkboxItem.className = 'checkbox-item';
+                                checkboxItem.innerHTML = `
+                                    <input type="checkbox" name="${question.id}" value="${option}" class="checkbox-input" id="${question.id}_${optIndex}">
+                                    <label for="${question.id}_${optIndex}" class="text-gray-700">${option}</label>
+                                `;
+                                checkboxGroup.appendChild(checkboxItem);
+                            });
+                            questionElement.appendChild(checkboxGroup);
+                            break;
+
+                        case 'rating':
+                            // 量表题
+                            const ratingGroup = document.createElement('div');
+                            ratingGroup.className = 'rating-group';
+                            const descElement = document.createElement('div');
+                            descElement.className = 'text-gray-500 text-sm mt-2';
+                            descElement.textContent = question.desc;
+
+                            for (let i = 1; i <= 5; i++) {
+                                const ratingItem = document.createElement('div');
+                                ratingItem.className = 'rating-item';
+                                ratingItem.dataset.value = i;
+                                ratingItem.innerHTML = `
+                                    <i class="fas fa-star star ${answers[question.id] === i ? 'active' : ''}"></i>
+                                    <span class="text-gray-700 mt-1">${i}分</span>
+                                `;
+                                ratingGroup.appendChild(ratingItem);
+                            }
+
+                            questionElement.appendChild(ratingGroup);
+                            questionElement.appendChild(descElement);
+                            break;
+
+                        case 'input':
+                            // 开放题
+                            const inputElement = document.createElement('textarea');
+                            inputElement.className = 'text-input';
+                            inputElement.name = question.id;
+                            inputElement.rows = 4;
+                            inputElement.placeholder = question.required ? '请输入您的答案...' : '（选填）请输入您的答案...';
+                            inputElement.value = answers[question.id] || '';
+                            questionElement.appendChild(inputElement);
+                            break;
+                    }
+
+                    moduleElement.appendChild(questionElement);
+                });
+
+                contentContainer.appendChild(moduleElement);
+            });
+
+            // 绑定题目事件
+            bindQuestionEvents();
+        }
+
+        // 绑定题目交互事件
+        function bindQuestionEvents() {
+            // 单选题事件
+            document.querySelectorAll('.radio-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const questionId = this.name;
+                    answers[questionId] = this.value;
+                });
+            });
+
+            // 多选题事件
+            document.querySelectorAll('.checkbox-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const questionId = this.name;
+                    const value = this.value;
+                    if (!answers[questionId]) answers[questionId] = [];
+
+                    if (this.checked) {
+                        // 限制最多选择5项
+                        if (answers[questionId].length < 5) {
+                            answers[questionId].push(value);
+                        } else {
+                            this.checked = false;
+                            alert('最多只能选择5项');
+                        }
+                    } else {
+                        answers[questionId] = answers[questionId].filter(item => item !== value);
+                    }
+                });
+            });
+
+            // 量表题事件
+            document.querySelectorAll('.rating-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const questionId = this.closest('.question-container').dataset.questionId;
+                    const value = parseInt(this.dataset.value);
+                    answers[questionId] = value;
+
+                    // 更新星级样式
+                    const siblings = this.parentElement.querySelectorAll('.rating-item');
+                    siblings.forEach(sib => {
+                        const star = sib.querySelector('.star');
+                        star.classList.remove('active');
+                        if (parseInt(sib.dataset.value) <= value) {
+                            star.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            // 开放题事件
+            document.querySelectorAll('.text-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const questionId = this.name;
+                    answers[questionId] = this.value;
+                });
+            });
+        }
+
+        // 验证必填项
+        function validateRequiredFields(identity) {
+            const survey = surveyData[identity];
+            let isValid = true;
+            let missingQuestion = '';
+
+            survey.modules.forEach(module => {
+                module.questions.forEach((question, index) => {
+                    if (question.required && !answers[question.id]) {
+                        isValid = false;
+                        missingQuestion = `${module.title} 第${index + 1}题`;
+                    }
+
+                    // 多选题特殊验证（至少选择一项）
+                    if (question.type === 'checkbox' && question.required) {
+                        if (!answers[question.id] || answers[question.id].length === 0) {
+                            isValid = false;
+                            missingQuestion = `${module.title} 第${index + 1}题`;
+                        }
+                    }
+                });
+            });
+
+            if (!isValid) {
+                alert(`请完善必填项：${missingQuestion}`);
+            }
+
+            return isValid;
+        }
+
+        // 检查是否重复提交
+        function checkDuplicateSubmission() {
+            const submitKey = `survey_submitted_${currentIdentity}`;
+            return localStorage.getItem(submitKey) === 'true';
+        }
+
+        // 保存提交状态
+        function saveSubmitStatus() {
+            const submitKey = `survey_submitted_${currentIdentity}`;
+            localStorage.setItem(submitKey, 'true');
+        }
+
+        // 初始化页面事件
+        function initEvents() {
+            // 身份选择事件
+            document.querySelectorAll('.identity-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const identity = this.dataset.identity;
+                    document.querySelector(`input[value="${identity}"]`).checked = true;
+                    currentIdentity = identity;
+
+                    // 更新选中样式
+                    document.querySelectorAll('.identity-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 启用进入问卷按钮
+                    document.getElementById('enter-survey').disabled = false;
+                });
+            });
+
+            // 进入问卷按钮事件
+            document.getElementById('enter-survey').addEventListener('click', function() {
+                // 检查是否重复提交
+                if (checkDuplicateSubmission()) {
+                    alert('您已提交过该问卷，无需重复提交');
+                    return;
+                }
+
+                // 初始化答案对象
+                answers = {};
+
+                // 渲染问卷
+                renderSurvey(currentIdentity);
+
+                // 切换到问卷页面
+                showPage('survey-page');
+            });
+
+            // 返回首页按钮事件
+            document.getElementById('back-index').addEventListener('click', function() {
+                showPage('index-page');
+            });
+
+            // 问卷提交事件
+            document.getElementById('survey-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // 验证必填项
+                if (!validateRequiredFields(currentIdentity)) {
+                    return;
+                }
+
+                // 检查是否重复提交
+                if (checkDuplicateSubmission()) {
+                    alert('您已提交过该问卷，无需重复提交');
+                    return;
+                }
+
+                // 模拟提交（实际项目中可替换为AJAX请求后端接口）
+                console.log('问卷提交数据：', {
+                    identity: currentIdentity,
+                    submitTime: new Date().toISOString(),
+                    answers: answers
+                });
+
+                // 保存提交状态
+                saveSubmitStatus();
+
+                // 切换到成功页面
+                showPage('success-page');
+            });
+
+            // 分享按钮事件
+            document.getElementById('share-btn').addEventListener('click', function() {
+                if (navigator.share) {
+                    // 原生分享（支持HTTPS环境）
+                    navigator.share({
+                        title: '民办高校教学组织效能调研问卷，诚邀您参与！',
+                        text: '请参与民办高校省级优秀基层教学组织效能现状调研，感谢支持！',
+                        url: window.location.href,
+                    }).catch(err => {
+                        console.log('分享失败：', err);
+                        copyLink();
+                    });
+                } else {
+                    // 复制链接
+                    copyLink();
+                }
+            });
+
+            // 重新填写按钮事件
+            document.getElementById('restart-btn').addEventListener('click', function() {
+                // 清除提交状态
+                const submitKey = `survey_submitted_${currentIdentity}`;
+                localStorage.removeItem(submitKey);
+                showPage('index-page');
+            });
+        }
+
+        // 复制链接功能
+        function copyLink() {
+            const input = document.createElement('input');
+            input.value = window.location.href;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            alert('链接已复制，请分享给其他受访者');
+        }
+
+        // 初始化应用
+        function initApp() {
+            initEvents();
+            showPage('index-page');
+        }
+
+        // 启动应用
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
